@@ -6,3 +6,6 @@ https://earthchie.github.io/oEvolve.js/
 
 # Documents
 coming soon
+
+## License
+WTFPL 2.0 http://www.wtfpl.net/
