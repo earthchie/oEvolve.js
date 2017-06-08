@@ -328,8 +328,6 @@ function oEvolve(obj, options) {
                 }
             }
 
-            console.log(111, diff, listener_types);
-
             for (i in listener_types) {
                 if (listener_types.hasOwnProperty(i) && listener_types[i]) {
                     listener = target['__' + i + 'Listeners'];
