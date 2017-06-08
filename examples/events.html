@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>oEvolve.js - events</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.24/css/uikit.min.css" rel="stylesheet">
+    <style>
+        h1,
+        h2 {
+            font-family: Kanit, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="uk-container">
+        <br>
+        <a href="../">back to index</a>
+        <hr>
+
+        <h1>Events that fire on data change</h1>
+        <p>
+            Example use of events<br>
+            <em>please check the source code first!</em><br>
+            <em>then open console then execute these code line by line:</em>
+        </p>
+
+<pre><code>
+    data.profile.gender = 'male'; // this will fire watch and update event;
+
+    data.profile.name.nickname = 'Da'; // this will fire watch and create event;
+
+    delete data.profile.name.nickname; // this will fire watch and delete event;
+
+    watch_listener.removeEventListener(); // this will remove watch listener
+
+    data.profile.name.nickname = 'Da'; // now this will fire create event only, not anymore watch event
+</code></pre>
+
+    </div>
+
+    <script type="text/javascript" src="../oEvolve.min.js"></script>
+    <script>
+        // sample data
+        var data = {
+            profile:{
+                gender: "female",
+                name: {
+                    title: "miss",
+                    first: "Dakanda",
+                    last: "Sawangwong"
+                }
+            },
+            contact: {
+                email: "dakanda.gomez@example.com",
+                phone: "942-675-793",
+                mobile: "687-345-684",
+            }
+        };
+
+        data = new oEvolve(data); // evolve it!
+
+        // fire when new data has been inserted
+        data.addEventListener('create', function (newval, oldval, diff) {
+            alert('event create has been fired!');
+
+            console.warn('Old value');
+            console.log(oldval);
+
+            console.warn('New Value');
+            console.log(newval);
+
+            console.warn('Diff');
+            console.log(diff);
+        });
+
+        // fire when exist data has been updated
+        data.addEventListener('update', function (newval, oldval, diff) {
+            alert('event update has been fired!');
+
+            console.warn('Old value');
+            console.log(oldval);
+
+            console.warn('New Value');
+            console.log(newval);
+
+            console.warn('Diff');
+            console.log(diff);
+        });
+
+        // fire when exist data has been removed
+        data.addEventListener('delete', function (newval, oldval, diff) {
+            alert('event delete has been fired!');
+
+            console.warn('Old value');
+            console.log(oldval);
+
+            console.warn('New Value');
+            console.log(newval);
+
+            console.warn('Diff');
+            console.log(diff);
+        });
+
+        // fire when data change
+        var watch_listener = data.addEventListener('watch', function (newval, oldval, diff) {
+            alert('event watch has been fired!');
+        });
+        // watch_listener.removeEventListener(); // this is how you remove event listener
+
+        /* 
+
+        ////// you can also remove listener in the same way vanilla js works too //////
+
+        // first create function
+        var listener = function(newval, oldval, diff) {
+            console.warn('event watch has been fired!');
+            console.log(newval, oldval, diff);
+        };
+
+        // then bind event
+        data.addEventListener('watch', listener);
+
+        // remove event
+        data.removeEventListener('watch', listener);
+
+        */
+    </script>
+</body>
+
+</html>

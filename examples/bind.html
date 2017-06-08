@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>oEvolve.js - bind</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.24/css/uikit.min.css" rel="stylesheet">
+    <style>
+        h1,
+        h2 {
+            font-family: Kanit, sans-serif;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="uk-container">
+        <br>
+        <a href="../">back to index</a>
+        <hr>
+
+        <h1>Render data to HTML reactively</h1>
+        <p>
+            Example use of reactive data binding<br>
+            <em>please check the source code</em>
+        </p>
+
+        <!-- 
+            SYNTAX:
+            {{key}} or {{key||default value}}
+        -->
+        <div id="data" class="uk-card uk-card-body uk-card-default">
+            Hello! my name is {{profile.name.first}} {{profile.name.last}} <em>({{profile.name.nickname||-}})</em>. 
+            My contact email is <a href="mailto:{{contact.email}}">{{contact.email}}</a>.
+        </div>
+
+        <p>
+            <em>Now, please open console then execute these code line by line:</em>
+        </p>
+
+<pre><code>
+    data.profile.name.nickname = 'Da'; // this will re-render data instantly!
+
+    data.contact.email = 'savage.panda@example.com'; // more example
+
+    binder.unbind(); // this will unbind data binding
+
+    data.profile.name.nickname = 'Panda'; // nothing happended
+</code></pre>
+
+    </div>
+    <script type="text/javascript" src="../oEvolve.min.js"></script>
+    <script>
+        // sample data
+        var data = {
+            profile:{
+                gender: "female",
+                name: {
+                    title: "miss",
+                    first: "Dakanda",
+                    last: "Sawangwong"
+                }
+            },
+            contact: {
+                email: "dakanda.gomez@example.com",
+                phone: "942-675-793",
+                mobile: "687-345-684",
+            }
+        };
+
+        data = new oEvolve(data); // evolve it!
+
+        var binder = data.__bind(document.getElementById('data'));
+
+    </script>
+</body>
+
+</html>

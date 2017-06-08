@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>oEvolve.js - get</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Kanit" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.0-beta.24/css/uikit.min.css" rel="stylesheet">
+    <style>
+        h1,
+        h2 {
+            font-family: Kanit, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="uk-container">
+        <br>
+        <a href="../">back to index</a>
+        <hr>
+
+        <h1>Apply data to a form</h1>
+        <p>
+            Example use of get<br> 
+            <em>please check the source code</em>
+        </p>
+
+        <form id="form">
+
+            <div class="uk-margin">
+                <b>Title</b>
+                <small>(profile.name.title)</small>
+                <br>
+                <select name="profile.name.title" class="uk-select">
+                    <option value="">- Please Select -</option>
+                    <option value="mr">Mister</option>
+                    <option value="miss">Miss</option>
+                    <option value="mrs">Misses</option>
+                </select>
+            </div>
+
+            <div class="uk-margin">
+                <b>First Name</b>
+                <small>(profile.name.first)</small>
+                <br>
+                <input type="text" class="uk-input" name="profile.name.first">
+            </div>
+            
+            <div class="uk-margin">
+                <b>Last Name</b>
+                <small>(profile.name.last)</small>
+                <br>
+                <input type="text" class="uk-input" name="profile.name.last">
+            </div>
+            
+            <div class="uk-margin">
+                <b>Gender</b>
+                <small>(profile.gender)</small>
+                <br>
+                <select name="profile.gender" class="uk-select">
+                    <option value="">- Please Select -</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            
+            <div class="uk-margin">
+                <b>Email</b>
+                <small>(contact.email)</small>
+                <br>
+                <input type="email" class="uk-input" name="contact.email">
+            </div>
+            
+            <div class="uk-margin">
+                <b>Phone</b>
+                <small>(contact.phone)</small>
+                <br>
+                <input type="text" class="uk-input" name="contact.phone">
+            </div>
+            
+            <div class="uk-margin">
+                <b>Mobile</b>
+                <small>(contact.mobile)</small>
+                <br>
+                <input type="text" class="uk-input" name="contact.mobile">
+            </div>
+
+        </form>
+    </div>
+
+    <script type="text/javascript" src="../oEvolve.min.js"></script>
+    <script>
+        // sample data
+        var data = {
+            profile:{
+                gender: "female",
+                name: {
+                    title: "miss",
+                    first: "Dakanda",
+                    last: "Sawangwong"
+                }
+            },
+            contact: {
+                email: "dakanda.gomez@example.com",
+                phone: "942-675-793",
+                mobile: "687-345-684",
+            }
+        };
+
+        data = new oEvolve(data); // evolve it!
+
+        var fields = document.querySelectorAll('#form [name]');
+        
+        for(var i = 0; i < fields.length; i++){
+            fields[i].value = data.__get(fields[i].name); // access data by dot-notation keys
+        }
+
+
+    </script>
+</body>
+
+</html>
