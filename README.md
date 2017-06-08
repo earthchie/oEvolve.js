@@ -117,7 +117,7 @@ obj.removeEventListener.('watch', watch_listener);
 ```
 
 ### ``obj.toString()`` 
-Return a json string of that object.
+Return a json string of the object.
 
 ```javascript
 var data = new oEvolve({
@@ -140,11 +140,11 @@ console.log(data.toString(true));
 ```
 you'll get
 
-```javascript
-"{
+```
+{
   "A": 1,
   "B": 2
-}"
+}
 ```
 
 If the parameter is a string, this function will treat that string as a mustache-style template.
