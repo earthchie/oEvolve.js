@@ -46,12 +46,12 @@ e.g. ``"create update"``
 for example:
 ```javascript
 // fire when data has changed in any way 
-obj.addEventListener('watch', function(oldvalue, newvalue, diff){
+obj.addEventListener('watch', function (oldvalue, newvalue, diff) {
   console.log(oldvalue, newvalue, diff);
 });
 
 // fire when data has been update or delete
-obj.addEventListener('update delete', function(oldvalue, newvalue, diff){
+obj.addEventListener('update delete', function (oldvalue, newvalue, diff) {
   console.log(oldvalue, newvalue, diff);
 });
 ```
@@ -59,7 +59,7 @@ There are 2 ways for you to remove listener
 1. If you use named function as listener, then remove it with [obj.removeEventListener()](https://github.com/earthchie/oEvolve.js/#objremoveeventlistenerstr_events-function_listener)
 
 ```javascript
-var watch_listener = function(newvalue, oldvalue, diff){
+var watch_listener = function (newvalue, oldvalue, diff) {
   console.log(newvalue, oldvalue, diff)
 };
 
@@ -75,7 +75,7 @@ obj.removeEventListener.('watch', watch_listener);
 2. If you use anonymouse function as listener, you have to remove it like this.
 
 ```javascript
-var watch_listener = obj.addEventListener('watch', function(oldvalue, newvalue, diff){
+var watch_listener = obj.addEventListener('watch', function (oldvalue, newvalue, diff) {
   console.log(oldvalue, newvalue, diff);
 });
 ```
@@ -104,7 +104,7 @@ for example:
 If you bind listener like this
 
 ```javascript
-var watch_listener = function(newvalue, oldvalue, diff){
+var watch_listener = function (newvalue, oldvalue, diff) {
   console.log(newvalue, oldvalue, diff)
 };
 
@@ -169,7 +169,22 @@ you'll get
 The A is 1 and the B is 2 and the C is not exists
 ```
 
-### ``obj.__bind(DOM_element)`` or ``obj.__bind(function_modifier, DOM_element)``
+### ``obj.__bind(DOM_element)``
+Reactive rendering the object data to given DOM. Please see [obj.obj.toString()](https://github.com/earthchie/oEvolve.js/#objtostring) for more info about template syntax.
+
+```javascript
+obj.__bind(document.getElementById('container'));
+```
+Furthermore, you can set the first parameter as function to be a data modifier. then pass DOM object to second parameter instead.
+
+```javascript
+obj.__bind(function (data) {
+  data.foo = 'bar';
+  return data; // don't forget to return data
+}, document.getElementById('container'));
+```
+
+or ``obj.__bind(function_modifier, DOM_element)``
 
 ### ``obj.__clone()``
 
@@ -178,15 +193,69 @@ Return a copy of current object. You'll get evolved object as a result.
 This function can also accept a boolean parameter ``obj.__clone(true)``. When the parameter is set to true, this function will perform a deep clone that copy prototype, listeners of original object too.
 
 
-### ``obj.__data()`` and ``obj.toObject()`` (alias)
+### ``obj.__data()``
 
-### ``obj.__deflate``
+Return the Object Literal of current object. (but why do you still need this?!)
+
+Note: If you prefer, you may use ``obj.toObject()`` instead, these two function are identical.
+
+### ``obj.__deflate()``
+
+Deflate object data to be 1-level depth
+
+for example:
+```javascript
+var data = new oEvolve({
+  A1: {
+    A2: {
+      A3: 'A3',
+      foo: 'bar'
+    },
+    foo: 'bar'
+  }
+});
+
+console.log(data.__deflate());
+```
+
+you'll get
+
+```javascript
+{
+  "A1.A2.A3":   "A3", 
+  "A1.A2.foo":  "bar", 
+  "A1.foo":     "bar"
+}
+```
 
 ### ``obj.__diff(obj2)``
 
 ### ``obj.__get(str_key)``
 
 ### ``obj.__inflate()``
+turn deflated object back into original structure
+
+```javascript
+var data = new oEvolve({
+  "A1.A2.A3":   "A3", 
+  "A1.A2.foo":  "bar", 
+  "A1.foo":     "bar"
+});
+
+console.log(data.__inflate());
+```
+you'll get
+```javascript
+{
+  A1: {
+    A2: {
+      A3: 'A3',
+      foo: 'bar'
+    },
+    foo: 'bar'
+  }
+}
+```
 
 ### ``obj.__isEqual(obj2)``
 
