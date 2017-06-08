@@ -232,12 +232,12 @@ console.log(data);
 you'll get
 ```javascript
 {
-  A1: {
-    A2: {
-      A3: 'A3',
-      foo: 'bar'
+  "A1": {
+    "A2": {
+      "A3": "A3",
+      "foo": "bar"
     },
-    foo: 'bar'
+    "foo": "bar"
   }
 }
 ```
