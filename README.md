@@ -74,6 +74,32 @@ obj.addEventListener('update delete', function(oldvalue, newvalue, diff){
   console.log(oldvalue, newvalue, diff);
 });
 ```
+There are 2 ways for you to remove listener
+1. If you use named function as listener, then remove it with [obj.removeEventListener()](https://github.com/earthchie/oEvolve.js/#objremoveeventlistenerstr_events-function_listener)
+
+```
+var watch_listener = function(newvalue, oldvalue, diff){
+  console.log(newvalue, oldvalue, diff)
+};
+
+obj.addEventListener('watch', watch_listener);
+
+```
+then
+
+```
+obj.removeEventListener.('watch', watch_listener);
+```
+
+2. If you use anonymouse function as listener, you have to remove it like this.
+
+```
+var watch_listener = obj.addEventListener('watch', function(oldvalue, newvalue, diff){
+  console.log(oldvalue, newvalue, diff);
+});
+
+watch_listener.removeEventListener(); // remove listener
+```
 
 ## ``obj.removeAllEventListeners(str_events)``
 
