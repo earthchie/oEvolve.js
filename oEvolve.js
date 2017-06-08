@@ -1,6 +1,6 @@
 /**
  * @name oEvolve.js
- * @version 1.0.0
+ * @version 1.0.1
  * @update June 8, 2017
  * @website https://github.com/earthchie/oEvolve.js
  * @author Earthchie https://facebook.com/earthchie/
@@ -33,9 +33,12 @@ function oEvolve(obj, options) {
             deep = false;
         }
         if (deep) {
-            return new oEvolve(JSON.parse(this.toString()), proto);
+            return new oEvolve(JSON.parse(this.toString()), {
+                proto: proto,
+                deep: options.deep
+            });
         } else {
-            return new oEvolve(JSON.parse(this.toString()));
+            return new oEvolve(JSON.parse(this.toString()), {deep: options.deep});
         }
     });
 
@@ -98,7 +101,7 @@ function oEvolve(obj, options) {
     /*
      * remove data binding
      */
-    setPrototype(obj, '__unbindAll', function (mutator, dom) {
+    setPrototype(obj, '__unbindAll', function () {
         setPrototype(this, '__bindListeners', []);
     });
 
@@ -125,7 +128,7 @@ function oEvolve(obj, options) {
             self.__bindListeners.push(function () {
                 if (dom instanceof HTMLElement) {
                     if (typeof modifier === 'function') {
-                        self = new oEvolve(modifier(self.__data()) || self.__data());
+                        self = new oEvolve(modifier(self.__data()) || self.__data(), {deep: options.deep});
                     }
                     dom.innerHTML = self.toString(template);
                 }
@@ -268,7 +271,7 @@ function oEvolve(obj, options) {
     /*
      * remove all event listeners
      */
-    setPrototype(obj, 'removeAllEventListeners', function (name, listener) {
+    setPrototype(obj, 'removeAllEventListeners', function (name) {
         var self = this;
         setPrototype(self, '__ref', self);
 
