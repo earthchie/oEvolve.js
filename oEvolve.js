@@ -1,7 +1,7 @@
 /**
  * @name oEvolve.js
- * @version 1.0.1
- * @update June 8, 2017
+ * @version 1.0.2
+ * @update June 9, 2017
  * @website https://github.com/earthchie/oEvolve.js
  * @author Earthchie https://facebook.com/earthchie/
  * @license WTFPL v.2 - http://www.wtfpl.net/
@@ -75,20 +75,6 @@ function oEvolve(obj, options) {
      */
     setPrototype(obj, '__isEqual', function (obj2) {
         return oEvolve.isEqual(this.__data(), obj2);
-    });
-
-    /*
-     * inflate object to original deep level
-     */
-    setPrototype(obj, '__inflate', function (obj) {
-        return oEvolve.inflate(obj || this.__data());
-    });
-
-    /*
-     * deflate object to 1-level deep
-     */
-    setPrototype(obj, '__deflate', function (obj) {
-        return oEvolve.deflate(obj || this.__data());
     });
 
     /*
