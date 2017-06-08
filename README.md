@@ -199,70 +199,15 @@ Return the Object Literal of current object. (but why do you still need this?!)
 
 Note: If you prefer, you may use ``obj.toObject()`` instead, these two function are identical.
 
-### ``obj.__deflate()``
-
-Deflate object data to be 1-level depth
-
-for example:
-```javascript
-var data = new oEvolve({
-  A1: {
-    A2: {
-      A3: 'A3',
-      foo: 'bar'
-    },
-    foo: 'bar'
-  }
-});
-
-console.log(data.__deflate());
-```
-
-you'll get
-
-```javascript
-{
-  "A1.A2.A3":   "A3", 
-  "A1.A2.foo":  "bar", 
-  "A1.foo":     "bar"
-}
-```
-
 ### ``obj.__diff(obj2)``
 
 ### ``obj.__get(str_key)``
-
-### ``obj.__inflate()``
-turn deflated object back into original structure
-
-```javascript
-var data = new oEvolve({
-  "A1.A2.A3":   "A3", 
-  "A1.A2.foo":  "bar", 
-  "A1.foo":     "bar"
-});
-
-console.log(data.__inflate());
-```
-you'll get
-```javascript
-{
-  A1: {
-    A2: {
-      A3: 'A3',
-      foo: 'bar'
-    },
-    foo: 'bar'
-  }
-}
-```
 
 ### ``obj.__isEqual(obj2)``
 
 ### ``obj.__set(str_key, value)``
 
 ### ``obj.__unbindAll()``
-
 
 ## Static Functions
 
@@ -273,8 +218,58 @@ you'll get
 ### ``oEvolve.set(obj1, obj2)``
 
 ### ``oEvolve.inflate(obj)``
+Turn deflated object back into original structure
+
+```javascript
+var data = oEvolve.inflate({
+  "A1.A2.A3":   "A3", 
+  "A1.A2.foo":  "bar", 
+  "A1.foo":     "bar"
+});
+
+console.log(data);
+```
+you'll get
+```javascript
+{
+  A1: {
+    A2: {
+      A3: 'A3',
+      foo: 'bar'
+    },
+    foo: 'bar'
+  }
+}
+```
 
 ### ``oEvolve.deflate(obj)``
+
+Deflate object data to be 1-level depth
+
+for example:
+```javascript
+var data = oEvolve.deflate({
+  A1: {
+    A2: {
+      A3: 'A3',
+      foo: 'bar'
+    },
+    foo: 'bar'
+  }
+});
+
+console.log(data);
+```
+
+you'll get
+
+```javascript
+{
+  "A1.A2.A3":   "A3", 
+  "A1.A2.foo":  "bar", 
+  "A1.foo":     "bar"
+}
+```
 
 ### ``oEvolve.isEqual(obj1, obj2)``
 
