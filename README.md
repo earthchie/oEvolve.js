@@ -197,7 +197,7 @@ This function can also accept a boolean parameter ``obj.__clone(true)``. When th
 
 Return the Object Literal of current object. (but why do you still need this?!)
 
-Note: If you prefer, you may use ``obj.toObject()`` instead, these two function are identical.
+Note: If you prefer, you may use ``obj.toObject()`` instead, these two functions are identical.
 
 ### ``obj.__diff(obj2)``
 
