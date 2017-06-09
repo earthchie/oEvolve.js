@@ -170,7 +170,7 @@ The A is 1 and the B is 2 and the C is not exists
 ```
 
 ### ``obj.__bind(DOM_element)``
-Reactive rendering the object data to given DOM. Please see [obj.obj.toString()](https://github.com/earthchie/oEvolve.js/#objtostring) for more info about template syntax.
+Reactive rendering the object data to given DOM. Please see [obj.toString()](https://github.com/earthchie/oEvolve.js/#objtostring) for more info about template syntax.
 
 ```javascript
 obj.__bind(document.getElementById('container'));
