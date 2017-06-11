@@ -199,6 +199,62 @@ Note: If you prefer, you may use ``obj.toObject()`` instead, these two functions
 
 ### ``obj.__diff(obj2)``
 
+Return all the diff obj2 has, compared to the obj1. Will returns deflated-object of keys that has diff along side with diff type 
+* create - keys that appeared in obj2 but not in obj1
+* update - keys that appeared in both obj1 and obj2, but different values.
+* delete - keys that appeared in obj1 but not in obj2
+
+E.g.
+```javascript
+var obj1 = new oEvolve({
+
+  A1: {
+    A2: {
+      data: 'A'
+    }
+  },
+  
+  B1: {
+    B2: {
+      data: 'B'
+    }
+  }
+  
+}), obj2 = new oEvolve({
+
+  A1: {
+    A2: {
+      data: 'AA'
+    }
+  },
+  
+  B1: {
+    B2: {
+      newdata: 'BB'
+    }
+  },
+  
+  C1: {
+    C2: {
+      data: 'CC'
+    }
+  }
+  
+});
+
+console.log(obj1.__diff(obj2));
+
+```
+Result:
+```json
+{
+  "A1.A2.data": "update",
+  "B1.B2.data": "delete",
+  "B1.B2.newdata": "create",
+  "C1": "create"
+}
+```
+
 ### ``obj.__get(str_key)``
 
 Returns value of object by dot-notation-styled key, return undefined if that key doesn't exist.
