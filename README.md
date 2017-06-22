@@ -46,13 +46,13 @@ e.g. ``"create update"``
 for example:
 ```javascript
 // fire when data has changed in any way 
-obj.addEventListener('watch', function (oldvalue, newvalue, diff) {
-  console.log(oldvalue, newvalue, diff);
+obj.addEventListener('watch', function (newvalue, oldvalue , diff) {
+  console.log(newvalue, oldvalue , diff);
 });
 
 // fire when data has been update or delete
-obj.addEventListener('update delete', function (oldvalue, newvalue, diff) {
-  console.log(oldvalue, newvalue, diff);
+obj.addEventListener('update delete', function (newvalue, oldvalue, diff) {
+  console.log(newvalue, oldvalue , diff);
 });
 ```
 There are 2 ways for you to remove listener
@@ -75,8 +75,8 @@ obj.removeEventListener.('watch', watch_listener);
 2. If you use anonymouse function as listener, you have to remove it like this.
 
 ```javascript
-var watch_listener = obj.addEventListener('watch', function (oldvalue, newvalue, diff) {
-  console.log(oldvalue, newvalue, diff);
+var watch_listener = obj.addEventListener('watch', function (newvalue, oldvalue , diff) {
+  console.log(newvalue, oldvalue , diff);
 });
 ```
 then
