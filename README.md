@@ -13,6 +13,7 @@ Evolve the Object Literal to the next level.
 
 ## Todo
 - [ ] add support for Array
+- [ ] more new functions. e.g. concat(), forEach(), map(), filter(), indexOf()
 
 # Demo
 https://earthchie.github.io/oEvolve.js/
