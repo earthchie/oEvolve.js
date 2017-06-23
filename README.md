@@ -11,6 +11,9 @@ Evolve the Object Literal to the next level.
 - deflate object, make object become 1 level dept.
 - inflate deflated-object back to normal
 
+## Todo
+- [ ] add support for Array
+
 # Demo
 https://earthchie.github.io/oEvolve.js/
 
