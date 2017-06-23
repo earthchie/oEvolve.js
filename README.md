@@ -11,6 +11,9 @@ Evolve the Object Literal to the next level.
 - deflate object, make object become 1 level dept.
 - inflate deflated-object back to normal
 
+## Todo
+- [ ] add support for Array
+
 # Demo
 https://earthchie.github.io/oEvolve.js/
 
@@ -46,13 +49,13 @@ e.g. ``"create update"``
 for example:
 ```javascript
 // fire when data has changed in any way 
-obj.addEventListener('watch', function (oldvalue, newvalue, diff) {
-  console.log(oldvalue, newvalue, diff);
+obj.addEventListener('watch', function (newvalue, oldvalue , diff) {
+  console.log(newvalue, oldvalue , diff);
 });
 
 // fire when data has been update or delete
-obj.addEventListener('update delete', function (oldvalue, newvalue, diff) {
-  console.log(oldvalue, newvalue, diff);
+obj.addEventListener('update delete', function (newvalue, oldvalue, diff) {
+  console.log(newvalue, oldvalue , diff);
 });
 ```
 There are 2 ways for you to remove listener
@@ -75,8 +78,8 @@ obj.removeEventListener.('watch', watch_listener);
 2. If you use anonymouse function as listener, you have to remove it like this.
 
 ```javascript
-var watch_listener = obj.addEventListener('watch', function (oldvalue, newvalue, diff) {
-  console.log(oldvalue, newvalue, diff);
+var watch_listener = obj.addEventListener('watch', function (newvalue, oldvalue , diff) {
+  console.log(newvalue, oldvalue , diff);
 });
 ```
 then
@@ -126,8 +129,7 @@ var data = new oEvolve({
 });
 console.log(data.toString());
 ```
-you'll get
-
+Result:
 ```javascript
 "{"A":1,"B":2}"
 ```
@@ -138,9 +140,8 @@ If the parameter is a boolean and set to ``true``, it will return formatted json
 ```javascript
 console.log(data.toString(true));
 ```
-you'll get
-
-```
+Result:
+```html
 {
   "A": 1,
   "B": 2
@@ -153,7 +154,7 @@ If the parameter is a string, this function will treat that string as a mustache
 var template = 'The A is {{A}} and the B is {{B}}'
 console.log(data.toString(template));
 ```
-you'll get
+Result:
 ```javascript
 "The A is 1 and the B is 2"
 ```
@@ -164,7 +165,7 @@ Furthermore, you can set a default value like this
 var template = 'The A is {{A}} and the B is {{B}} and the C is {{C||not exists}}'
 console.log(data.toString(template));
 ```
-you'll get
+Result:
 ```javascript
 The A is 1 and the B is 2 and the C is not exists
 ```
@@ -201,21 +202,248 @@ Note: If you prefer, you may use ``obj.toObject()`` instead, these two functions
 
 ### ``obj.__diff(obj2)``
 
+Return all the diff obj2 has, compared to the obj1. Will returns deflated-object of keys that has diff along side with diff type 
+* create - keys that appeared in obj2 but not in obj1
+* update - keys that appeared in both obj1 and obj2, but different values.
+* delete - keys that appeared in obj1 but not in obj2
+
+E.g.
+```javascript
+var obj1 = new oEvolve({
+
+  A1: {
+    A2: {
+      data: 'A'
+    }
+  },
+  
+  B1: {
+    B2: {
+      data: 'B'
+    }
+  }
+  
+}), obj2 = new oEvolve({
+
+  A1: {
+    A2: {
+      data: 'AA'
+    }
+  },
+  
+  B1: {
+    B2: {
+      newdata: 'BB'
+    }
+  },
+  
+  C1: {
+    C2: {
+      data: 'CC'
+    }
+  }
+  
+});
+
+console.log(obj1.__diff(obj2));
+
+```
+Result:
+```json
+{
+  "A1.A2.data": "update",
+  "B1.B2.data": "delete",
+  "B1.B2.newdata": "create",
+  "C1": "create"
+}
+```
+
 ### ``obj.__get(str_key)``
+
+Returns value of object by dot-notation-styled key, return undefined if that key doesn't exist.
+
+E.g.
+```javascript
+var data = new oEvolve({
+  A1: {
+    A2: {
+      A3: {
+        A4: "A4"
+      }
+    }
+  }
+});
+
+console.log(data.__get('A1.A2.A3'));
+```
+
+Result:
+```javascript
+{
+  A4: "A4"
+}
+```
 
 ### ``obj.__isEqual(obj2)``
 
+compare obj2 with current object, this equivalence to ``JSON.stringify(current+obj) === JSON.stringify(obj2)``
+
 ### ``obj.__set(str_key, value)``
 
+Set value of object by dot-notation-styled key.
+
+E.g.
+```javascript
+var data = new oEvolve({
+  A1: {
+    A2: {
+      A3: {
+        A4: "A4"
+      }
+    }
+  }
+});
+
+data.__set('A1.A2.A3.A4', 'new value');
+
+console.log(data.__data());
+```
+
+Result:
+```javascript
+{
+  "A1": {
+    "A2": {
+      "A3": {
+        "A4": "new value"
+      }
+    }
+  }
+}
+```
+
 ### ``obj.__unbindAll()``
+
+Unbind all reactive rendering that is currenly binding to the object.
 
 ## Static Functions
 
 ### ``oEvolve.diff(obj1, obj2)``
 
-### ``oEvolve.get(obj1, obj2)``
+Return all the diff obj2 has, compared to the obj1. Will returns deflated-object of keys that has diff along side with diff type 
+* create - keys that appeared in obj2 but not in obj1
+* update - keys that appeared in both obj1 and obj2, but different values.
+* delete - keys that appeared in obj1 but not in obj2
 
-### ``oEvolve.set(obj1, obj2)``
+E.g.
+```javascript
+var obj1 = {
+
+  A1: {
+    A2: {
+      data: 'A'
+    }
+  },
+  
+  B1: {
+    B2: {
+      data: 'B'
+    }
+  }
+  
+}, obj2 = {
+
+  A1: {
+    A2: {
+      data: 'AA'
+    }
+  },
+  
+  B1: {
+    B2: {
+      newdata: 'BB'
+    }
+  },
+  
+  C1: {
+    C2: {
+      data: 'CC'
+    }
+  }
+  
+}
+
+console.log(oEvolve.diff(obj1, obj2));
+
+```
+Result:
+```json
+{
+  "A1.A2.data": "update",
+  "B1.B2.data": "delete",
+  "B1.B2.newdata": "create",
+  "C1": "create"
+}
+```
+
+### ``oEvolve.get(obj, key)``
+Returns value of object by dot-notation-styled key, return undefined if that key doesn't exist.
+
+E.g.
+```javascript
+var data = {
+  A1: {
+    A2: {
+      A3: {
+        A4: "A4"
+      }
+    }
+  }
+};
+
+console.log(oEvolve.get(data, 'A1.A2.A3'));
+```
+
+Result:
+```javascript
+{
+  A4: "A4"
+}
+```
+
+### ``oEvolve.set(obj, key, value)``
+
+Set value of object by dot-notation-styled key.
+
+E.g.
+```javascript
+var data = {
+  A1: {
+    A2: {
+      A3: {
+        A4: "A4"
+      }
+    }
+  }
+};
+
+oEvolve.set(data, 'A1.A2.A3.A4', 'new value');
+
+console.log(data);
+```
+
+Result:
+```javascript
+{
+  "A1": {
+    "A2": {
+      "A3": {
+        "A4": "new value"
+      }
+    }
+  }
+}
+```
 
 ### ``oEvolve.inflate(obj)``
 Turn deflated object back into original structure
@@ -229,7 +457,7 @@ var data = oEvolve.inflate({
 
 console.log(data);
 ```
-you'll get
+Result:
 ```javascript
 {
   "A1": {
@@ -261,7 +489,7 @@ var data = oEvolve.deflate({
 console.log(data);
 ```
 
-you'll get
+Result:
 
 ```javascript
 {
@@ -272,6 +500,7 @@ you'll get
 ```
 
 ### ``oEvolve.isEqual(obj1, obj2)``
+compare 2 object, this equivalence to ``JSON.stringify(obj1) === JSON.stringify(obj2)``
 
 ## License
 WTFPL 2.0 http://www.wtfpl.net/
