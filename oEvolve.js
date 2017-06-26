@@ -1,7 +1,7 @@
 /**
  * @name oEvolve.js
- * @version 1.0.2
- * @update June 9, 2017
+ * @version 1.1.0
+ * @update June 26, 2017
  * @website https://github.com/earthchie/oEvolve.js
  * @author Earthchie https://facebook.com/earthchie/
  * @license WTFPL v.2 - http://www.wtfpl.net/
@@ -13,17 +13,30 @@ function oEvolve(obj, options) {
     options = options || {};
     options.proto = options.proto || {};
 
-    if (typeof options.deep === 'undefined') {
-        options.deep = 10;
-    }
+    var setPrototype = function (target, key, val) {
+            options.proto[key] = val;
+            if(proto_list.indexOf(key) === -1){
+                proto_list.push(key);
+            }
+            if (target instanceof Array) {
+                target[key] = val;
+            } else {
+                Object.setPrototypeOf(target, options.proto);
+            }
 
-    var proto = options.proto,
-        setPrototype = function (target, key, val) {
-            proto[key] = val;
-            Object.setPrototypeOf(target, proto);
             return target;
         },
+        proto_list = [],
         i;
+    
+    if(obj instanceof Array){
+        for(var i in options.proto){
+            obj[i] = options.proto[i];
+        }
+    } else {
+        Object.setPrototypeOf(obj, options.proto);
+    }
+    
 
     /*
      * clone this object
@@ -34,11 +47,10 @@ function oEvolve(obj, options) {
         }
         if (deep) {
             return new oEvolve(JSON.parse(this.toString()), {
-                proto: proto,
-                deep: options.deep
+                proto: options.proto
             });
         } else {
-            return new oEvolve(JSON.parse(this.toString()), {deep: options.deep});
+            return new oEvolve(JSON.parse(this.toString()), {});
         }
     });
 
@@ -114,7 +126,7 @@ function oEvolve(obj, options) {
             self.__bindListeners.push(function () {
                 if (dom instanceof HTMLElement) {
                     if (typeof modifier === 'function') {
-                        self = new oEvolve(modifier(self.__data()) || self.__data(), {deep: options.deep});
+                        self = new oEvolve(modifier(self.__data()) || self.__data(), {});
                     }
                     dom.innerHTML = self.toString(template);
                 }
@@ -190,50 +202,51 @@ function oEvolve(obj, options) {
      * add event listener
      */
     setPrototype(obj, 'addEventListener', function (name, listener) {
-        var self = this,
-            listeners = {},
-            listener_types = ['watch', 'create', 'update', 'delete'],
-            success = false;
-        setPrototype(self, '__ref', self);
+        if (typeof name === 'string' && typeof listener === 'function') {
+            var self = this,
+                listeners = {},
+                listener_types = ['watch', 'create', 'update', 'delete'],
+                success = false;
 
-        name.split(' ').forEach(function (item) {
-            if (listener_types.indexOf(item) > -1) {
+            name.split(' ').forEach(function (item) {
+                if (listener_types.indexOf(item) > -1) {
 
-                var listener_type = '__' + item + 'Listeners',
-                    listener_name;
+                    var listener_type = '__' + item + 'Listeners',
+                        listener_name;
 
-                if (!self[listener_type]) {
-                    setPrototype(self, listener_type, {});
+                    if (!self[listener_type]) {
+                        setPrototype(self, listener_type, {});
+                    }
+
+                    listener_name = listener.name || Object.keys(self[listener_type]).length;
+
+                    if (!listeners[listener_type]) {
+                        listeners[listener_type] = [];
+                    }
+                    listeners[listener_type].push(listener_name);
+
+                    self[listener_type][listener_name] = listener;
+                    success = success || true;
                 }
-
-                listener_name = listener.name || Object.keys(self[listener_type]).length;
-
-                if (!listeners[listener_type]) {
-                    listeners[listener_type] = [];
-                }
-                listeners[listener_type].push(listener_name);
-
-                self[listener_type][listener_name] = listener;
-                success = success || true;
-            }
-        });
-        if (success) {
-            return {
-                listeners: listeners,
-                removeEventListener: function () {
-                    var listeners = this.listeners,
-                        i;
-                    for (i in listeners) {
-                        if (listeners.hasOwnProperty(i) && self[i]) {
-                            listeners[i].forEach(function (listener_name) {
-                                delete self[i][listener_name];
-                            });
+            });
+            if (success) {
+                return {
+                    listeners: listeners,
+                    removeEventListener: function () {
+                        var listeners = this.listeners,
+                            i;
+                        for (i in listeners) {
+                            if (listeners.hasOwnProperty(i) && self[i]) {
+                                listeners[i].forEach(function (listener_name) {
+                                    delete self[i][listener_name];
+                                });
+                            }
                         }
                     }
-                }
-            };
-        } else {
-            console.warn('addEventListener only support:', listener_types.join(', '));
+                };
+            } else {
+                console.warn('addEventListener only support:', listener_types.join(', '));
+            }
         }
     });
 
@@ -241,47 +254,47 @@ function oEvolve(obj, options) {
      * remove event listener
      */
     setPrototype(obj, 'removeEventListener', function (name, listener) {
-        var self = this;
-        setPrototype(self, '__ref', self);
+        if (typeof name === 'string' && typeof listener === 'function') {
+            var self = this;
 
-        name.split(' ').forEach(function (item) {
-            var listeners = '__' + item + 'Listeners';
-            if (self[listeners]) {
-                if (typeof listener === 'function' && self[listeners][listener.name]) {
-                    delete self[listeners][listener.name];
+            name.split(' ').forEach(function (item) {
+                var listeners = '__' + item + 'Listeners';
+                if (self[listeners]) {
+                    if (typeof listener === 'function' && self[listeners][listener.name]) {
+                        delete self[listeners][listener.name];
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 
     /*
      * remove all event listeners
      */
     setPrototype(obj, 'removeAllEventListeners', function (name) {
-        var self = this;
-        setPrototype(self, '__ref', self);
+        if (typeof name === 'string') {
+            var self = this;
 
-        name.split(' ').forEach(function (item) {
-            var listeners = '__' + item + 'Listeners';
-            if (self[listeners]) {
-                setPrototype(self, listeners, {});
-            }
-        });
+            name.split(' ').forEach(function (item) {
+                var listeners = '__' + item + 'Listeners';
+                if (self[listeners]) {
+                    setPrototype(self, listeners, {});
+                }
+            });
+        }
     });
 
     obj = new Proxy(obj, {
 
         get: function (target, key) {
 
-            if (key === 'length') {
+            if (!(target instanceof Array) && key === 'length') {
                 return Object.keys(target).length;
             } else if (key === '__isEvolved') {
                 return true;
             } else {
                 return target[key];
             }
-
-
         },
         set: function (target, key, value) {
 
@@ -305,6 +318,11 @@ function oEvolve(obj, options) {
 
             target[key] = value;
 
+            if (typeof obj[key] === 'object' && !obj[key].__isEvolved && proto_list.indexOf(key) === -1) {
+                options.proto.__ref = target.__ref || obj;
+                obj[key] = new oEvolve(obj[key], options);
+            }
+
             if (target.__ref) {
                 newval = target.__ref.__data();
             }
@@ -316,13 +334,13 @@ function oEvolve(obj, options) {
                     listener_types[diff[i]] = listener_types[diff[i]] || true;
                 }
             }
-
+            
             for (i in listener_types) {
-                if (listener_types.hasOwnProperty(i) && listener_types[i]) {
-                    listener = target['__' + i + 'Listeners'];
+                if (listener_types.hasOwnProperty(i) && listener_types[i] && target.__ref) {
+                    listener = target.__ref['__' + i + 'Listeners'];
 
                     for (keyname in listener) {
-                        if (typeof listener[keyname] === 'function') {
+                        if (typeof listener[keyname] === 'function' && Object.keys(diff).length) {
                             listener[keyname](newval, oldval, diff);
                         }
                     }
@@ -371,7 +389,7 @@ function oEvolve(obj, options) {
                     if (listener_types.hasOwnProperty(i) && listener_types[i]) {
                         listener = target['__' + i + 'Listeners'];
                         for (key in listener) {
-                            if (typeof listener[key] === 'function') {
+                            if (typeof listener[key] === 'function' && Object.keys(diff).length) {
                                 listener[key](newval, oldval, diff);
                             }
                         }
@@ -383,16 +401,14 @@ function oEvolve(obj, options) {
         }
     });
 
-    if (options.deep) {
-        if (!isNaN(options.deep)) {
-            options.deep = options.deep - 1;
-        }
-        for (i in obj) {
-            if (obj.hasOwnProperty(i) && obj[i] instanceof Object) {
-                obj[i] = new oEvolve(obj[i], options);
-            }
+   
+    for (i in obj) {
+        if (obj.hasOwnProperty(i) && !obj[i].__isEvolved && typeof obj[i] === 'object' && proto_list.indexOf(i) === -1) {
+            options.proto.__ref = obj.__ref || obj;
+            obj[i] = new oEvolve(obj[i], options);
         }
     }
+    
 
     return obj;
 }
@@ -484,9 +500,11 @@ oEvolve.diff = function (obj1, obj2) {
 
 oEvolve.get = function (obj, key) {
     'use strict';
-    key = key.replace(/\[(\w+)\]/g, '.$1').split('.');
-    while (obj && key.length > 0) {
-        obj = obj[key.shift()];
+    if (typeof key === 'string') {
+        key = key.replace(/\[(\w+)\]/g, '.$1').split('.');
+        while (obj && key.length > 0) {
+            obj = obj[key.shift()];
+        }
     }
     return obj;
 };
@@ -512,9 +530,11 @@ oEvolve.set = function (obj, key, val) {
                 setData(ka.join('.'), val, obj); //join the remaining parts back up with dots, and recursively set data on our new "base" obj
             }
         };
-    setData(key, val);
 
-    return self;
+    if (typeof key === 'string') {
+        setData(key, val);
+        return self;
+    }
 };
 
 oEvolve.inflate = function (obj) {
