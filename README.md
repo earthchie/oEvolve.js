@@ -12,7 +12,7 @@ Evolve the Object Literal to the next level.
 - inflate deflated-object back to normal
 
 ## Todo
-- [ ] add support for Array
+- [x] add support for Array
 - [ ] more new functions. e.g. concat(), forEach(), map(), filter(), indexOf()
 
 # Demo
