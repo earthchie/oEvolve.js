@@ -10,10 +10,12 @@ Evolve the Object Literal to the next level.
 - compare and find diff of 2 objects
 - deflate object, make object become 1 level dept.
 - inflate deflated-object back to normal
+- Array-like functions. e.g. ``__forEach()`` ``__filter()`` ``__reverse()``
 
 ## Todo
 - [x] add support for Array
-- [ ] more new functions. e.g. concat(), forEach(), map(), filter(), indexOf()
+- [x] more new functions. e.g. concat(), forEach(), map(), filter(), indexOf()
+- [ ] sort
 
 # Demo
 https://earthchie.github.io/oEvolve.js/
