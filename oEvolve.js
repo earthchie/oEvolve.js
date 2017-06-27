@@ -1,7 +1,7 @@
 /**
  * @name oEvolve.js
- * @version 1.1.0
- * @update June 26, 2017
+ * @version 1.1.1
+ * @update June 27, 2017
  * @website https://github.com/earthchie/oEvolve.js
  * @author Earthchie https://facebook.com/earthchie/
  * @license WTFPL v.2 - http://www.wtfpl.net/
@@ -15,7 +15,7 @@ function oEvolve(obj, options) {
 
     var setPrototype = function (target, key, val) {
             options.proto[key] = val;
-            if(proto_list.indexOf(key) === -1){
+            if (proto_list.indexOf(key) === -1) {
                 proto_list.push(key);
             }
             if (target instanceof Array) {
@@ -26,17 +26,381 @@ function oEvolve(obj, options) {
 
             return target;
         },
-        proto_list = [],
+        proto_list = ['__ref'],
         i;
-    
-    if(obj instanceof Array){
-        for(var i in options.proto){
+
+    if (obj instanceof Array) {
+        for (var i in options.proto) {
             obj[i] = options.proto[i];
         }
     } else {
         Object.setPrototypeOf(obj, options.proto);
     }
-    
+
+
+    if (!(obj instanceof Array)) {
+
+        /*
+         * extend
+         */
+        setPrototype(obj, '__extend', function (obj2) {
+            oEvolve.extend(this, obj2);
+            return this;
+        });
+        setPrototype(obj, '__concat', function (obj2) {
+            oEvolve.extend(this, obj2);
+            return this;
+        });
+
+        /*
+         * entries
+         */
+        setPrototype(obj, '__entries', function () {
+            var data = this.__clone();
+            return {
+                next: function () {
+                    if (data.length < 1) {
+                        return {
+                            value: undefined,
+                            done: true
+                        };
+                    } else {
+                        return {
+                            value: data.__shift(true),
+                            done: false
+                        };
+                    }
+                }
+            }
+        });
+        
+        /*
+         * every
+         */
+        setPrototype(obj, '__every', function (conditioner) {
+            var result = true;
+            this.__forEach(function (val, key, self) {
+                result = result && conditioner(val, key, self);
+            });
+            return result;
+        });
+
+        /*
+         * fill
+         */
+        setPrototype(obj, '__fill', function (val) {
+            this.__map(function () {
+                return val;
+            });
+            return this;
+        });
+
+        /*
+         * filter
+         */
+        setPrototype(obj, '__filter', function (executor) {
+            var self = this;
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+                    if (!executor(self[i], i, self)) {
+                        delete self[i];
+                    }
+                }
+            }
+            return self;
+        });
+
+        /*
+         * find
+         */
+        setPrototype(obj, '__find', function (conditioner) {
+            var self = this;
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+                    if (conditioner(self[i], i, self)) {
+                        return self[i];
+                    }
+                }
+            }
+        });
+
+        /*
+         * findIndex
+         */
+        setPrototype(obj, '__findIndex', function (conditioner) {
+            var self = this;
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+                    if (conditioner(self[i], i, self)) {
+                        return i;
+                    }
+                }
+            }
+            return false;
+        });
+
+        /*
+         * forEach
+         */
+        setPrototype(obj, '__forEach', function (executor) {
+            var self = this;
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+                    executor(self[i], i, self);
+                }
+            }
+            return self;
+        });
+
+        /*
+         * includes
+         */
+        setPrototype(obj, '__includes', function (val) {
+            return !!this.__indexOf(val);
+        });
+
+        /*
+         * indexOf
+         * return false if not found
+         */
+        setPrototype(obj, '__indexOf', function (value, deep, prefix) {
+            var self = this,
+                found;
+
+            prefix = prefix || '';
+
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+
+                    if (self[i] == value) {
+                        return prefix + i;
+                    }
+
+                    if (self[i].__isEvolved && self[i].__isEqual(value)) {
+                        return prefix + i;
+                    }
+
+                    if (self[i].__isEvolved && deep) {
+                        found = self[i].__indexOf(value, deep, i + '.');
+                        if (found !== false) {
+                            return found;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        });
+
+        /*
+         * join
+         */
+        setPrototype(obj, '__join', function (sep) {
+            this.__reduce(function (a, b) {
+                a = a + sep + b;
+                return a;
+            });
+            return this.value;
+        });
+
+        /*
+         * keys
+         */
+        setPrototype(obj, '__keys', function () {
+            var data = this.__clone();
+            return {
+                next: function () {
+                    if (data.length < 1) {
+                        return {
+                            value: undefined,
+                            done: true
+                        };
+                    } else {
+                        return {
+                            value: data.__shift(true)[1],
+                            done: false
+                        };
+                    }
+                }
+            }
+        });
+
+        /*
+         * lastIndexOf
+         */
+        setPrototype(obj, '__lastIndexOf', function (value, deep, prefix) {
+            var self = this,
+                index = false,
+                found;
+
+            prefix = prefix || '';
+
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+
+                    if (self[i] == value) {
+                        index = prefix + i;
+                    }
+
+                    if (self[i].__isEvolved && self[i].__isEqual(value)) {
+                        index = prefix + i;
+                    }
+
+                    if (self[i].__isEvolved && deep) {
+                        found = self[i].__lastIndexOf(value, deep, i + '.');
+                        if (found !== false) {
+                            index = found;
+                        }
+                    }
+                }
+            }
+
+            return index;
+        });
+
+        /*
+         * map
+         */
+        setPrototype(obj, '__map', function (executor) {
+            var self = this;
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+                    self[i] = executor(self[i], i, self) || self[i];
+                }
+            }
+            return self;
+        });
+
+        /*
+         * pop
+         */
+        setPrototype(obj, '__pop', function (withKey) {
+            var last, toPop;
+            this.__forEach(function (val, key) {
+                toPop = {};
+                toPop[key] = val;
+                last = key;
+            });
+
+            delete this[last];
+            if (withKey) {
+                return [toPop[last], last];
+            } else {
+                return toPop[last];
+            }
+        });
+
+        /*
+         * reduce
+         */
+        setPrototype(obj, '__reduce', function (executor) {
+            var self = this,
+                data = self.__clone(),
+                prev,
+                val,
+                recieve;
+
+            self.__filter(function () {
+                return false;
+            });
+
+            data.__forEach(function (item) {
+                if (typeof prev === 'undefined') {
+                    prev = item;
+                } else {
+                    recieve = executor(prev, item);
+                    if (typeof recieve !== 'undefined') {
+                        val = recieve;
+                    }
+                    prev = val;
+                }
+
+            });
+
+            if (typeof val !== 'undefined') {
+                self.value = val;
+            }
+            return val;
+
+        });
+
+        /*
+         * reduceRight
+         */
+        setPrototype(obj, '__reduceRight', function (executor) {
+            var self = this;
+            return self.__reverse().__reduce(executor);
+        });
+
+        /*
+         * reverse
+         */
+        setPrototype(obj, '__reverse', function () {
+            var self = this,
+                data = this.__clone();
+
+            self.__filter(function(){
+                return false;
+            });
+            Object.keys(data).reverse().forEach(function(key){
+                self[key] = data[key];
+            });
+            return self;
+        });
+
+        /*
+         * shift
+         */
+        setPrototype(obj, '__shift', function (withKey) {
+            var self = this,
+                val;
+            for (i in self) {
+                if (self.hasOwnProperty(i) && proto_list.indexOf(i) === -1) {
+                    val = self[i];
+                    delete self[i]
+                    if (withKey) {
+                        return [val, i];
+                    } else {
+                        return val;
+                    }
+                }
+            }
+        });
+
+        /*
+         * some
+         */
+        setPrototype(obj, '__some', function (conditioner) {
+            var result = false;
+            this.__forEach(function (val, key, self) {
+                result = result || conditioner(val, key, self);
+            });
+            return result;
+        });
+
+        /*
+         * values
+         */
+        setPrototype(obj, '__values', function () {
+            var data = this.__clone();
+            return {
+                next: function () {
+                    if (data.length < 1) {
+                        return {
+                            value: undefined,
+                            done: true
+                        };
+                    } else {
+                        return {
+                            value: data.__shift(true)[0],
+                            done: false
+                        };
+                    }
+                }
+            }
+        });
+
+    }
 
     /*
      * clone this object
@@ -57,7 +421,7 @@ function oEvolve(obj, options) {
     /*
      * get object data
      */
-    setPrototype(obj, '__data', function () {
+    setPrototype(obj, '__data', function (data) {
         return JSON.parse(this.toString());
     });
 
@@ -149,6 +513,24 @@ function oEvolve(obj, options) {
      */
     setPrototype(obj, '__set', function (key, value) {
         oEvolve.set(this, key, value);
+    });
+
+    /*
+     * sort by keys
+     */
+    setPrototype(obj, '__sortKeys', function (key, value) {
+        var self = this,
+            data = this.__clone();
+
+        self.__filter(function(){
+            return false;
+        });
+        Object.keys(data).sort(function(a,b){
+            return a-b;
+        }).forEach(function(key){
+            self[key] = data[key];
+        });
+        return self;
     });
 
     /*
@@ -334,7 +716,7 @@ function oEvolve(obj, options) {
                     listener_types[diff[i]] = listener_types[diff[i]] || true;
                 }
             }
-            
+
             for (i in listener_types) {
                 if (listener_types.hasOwnProperty(i) && listener_types[i] && target.__ref) {
                     listener = target.__ref['__' + i + 'Listeners'];
@@ -401,14 +783,14 @@ function oEvolve(obj, options) {
         }
     });
 
-   
+
     for (i in obj) {
         if (obj.hasOwnProperty(i) && !obj[i].__isEvolved && typeof obj[i] === 'object' && proto_list.indexOf(i) === -1) {
             options.proto.__ref = obj.__ref || obj;
             obj[i] = new oEvolve(obj[i], options);
         }
     }
-    
+
 
     return obj;
 }
@@ -558,6 +940,9 @@ oEvolve.deflate = function (obj) {
             x,
             flatObject;
 
+        if (ob.__isEvolved) {
+            ob = ob.__data();
+        }
         for (i in ob) {
             if (ob.hasOwnProperty(i)) {
 
@@ -592,3 +977,24 @@ oEvolve.isEqual = function (obj1, obj2) {
         return false;
     }
 };
+
+oEvolve.extend = function () {
+    'use strict';
+
+    var extended = arguments[0],
+        argument,
+        prop,
+        key;
+
+    for (key in arguments) {
+        argument = arguments[key];
+        for (prop in argument) {
+            if (Object.prototype.hasOwnProperty.call(argument, prop)) {
+                extended[prop] = argument[prop];
+            }
+        }
+    }
+
+    return extended;
+}
+oEvolve.concat = oEvolve.extend;

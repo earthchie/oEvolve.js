@@ -327,6 +327,280 @@ Result:
 
 Unbind all reactive rendering that is currenly binding to the object.
 
+## Array-like features
+
+### ``obj.length``
+_works with both ``Object`` and ``Array`` instance_
+
+return the length of object. Equivalence to ``Object.keys(obj).length``
+
+```javascript
+var obj = new oEvolve({
+  a: 1,
+  b: 2,
+  c: {
+    data1: 1,
+    data2: 2
+  }
+});
+
+console.log(obj.length); // 3
+```
+
+### ``obj.__extend(obj2)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Merge two object together. Just like ``$.extends(obj1, obj2)``
+
+### ``obj.__concat(obj2)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+The alias of ``obj.__extend(obj2)``
+
+### ``obj.__entries()``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.entries()](https://developer.mozilla.org/th/docs/Web/JavaScript/Reference/Global_Objects/Array/entries)
+
+Returns a new Array Iterator object that contains the key/value pairs for each index in the array.
+
+```javascript
+var a = new oEvolve({
+  a: 1,
+  b: 2,
+  c: 3
+});
+var iterator = a.__entries();
+
+console.log(iterator.next().value)); // [0, 'a']
+console.log(iterator.next().value); // [1, 'b']
+console.log(iterator.next().value); // [2, 'c']
+```
+
+### ``obj.__every(fn_conditioner)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.every()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/every)
+
+The ``__every()`` method tests whether all elements in the object pass the test implemented by the provided function.
+
+```javascript
+function isBigEnough(element, index, array) { 
+  return element >= 10; 
+} 
+
+var obj1 = new oEvolve({
+  a: 12,
+  b: 5,
+  c: 8,
+  d: 130,
+  f: 44
+});
+
+var obj2 = new oEvolve({
+  a: 12,
+  b: 54,
+  c: 18,
+  d: 130,
+  f: 44
+});
+
+console.log(obj1.__every(isBigEnough)); // false
+console.log(obj2.__every(isBigEnough)); // true
+```
+
+### ``obj.__fill(val)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.fill()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/fill)
+
+The ``__fill()`` method fills all the elements of an object from a start index to an end index with a static value.
+
+```javascript
+var numbers = new oEvolve({
+  a: 1,
+  b: 2,
+  c: 3
+});
+console.log(numbers.__fill(1)); // {a: 1, b: 1, c: 1}
+```
+
+### ``obj.__filter(fn_executor)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)
+
+The ``__filter()`` method creates a new array with all elements that pass the test implemented by the provided function.
+
+```javascript
+var words = new oEvolve({
+  a: "spray", 
+  b: "limit", 
+  c: "elite", 
+  d: "exuberant", 
+  e: "destruction", 
+  f: "present"
+});
+
+var longWords = words.__filter(function(word){
+  return word.length > 6;
+});
+
+console.log(longWords); // {d: "exuberant", e: "destruction", f: "present"}
+```
+
+### ``obj.__find(fn_conditioner)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.find()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/find)
+
+The ``__find()`` method returns the value of the first element in the object that satisfies the provided testing function. Otherwise ``undefined`` is returned.
+
+```javascript
+function isBigEnough(element) {
+  return element >= 15;
+}
+
+var obj1 = new oEvolve({
+  a: 12,
+  b: 5,
+  c: 8,
+  d: 130,
+  f: 44
+});
+
+console.log(obj1.__find(isBigEnough)); // 130
+```
+
+### ``obj.__findIndex(fn_conditioner)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.findIndex()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex)
+
+The ``__findIndex()`` method returns the index of the first element in the object that satisfies the provided testing function. Otherwise ``false`` is returned.
+
+```javascript
+function isBigEnough(element) {
+  return element >= 15;
+}
+
+var obj1 = new oEvolve({
+  a: 12,
+  b: 5,
+  c: 8,
+  d: 130,
+  f: 44
+});
+
+console.log(obj1.__findIndex(isBigEnough)); // "d"
+```
+
+### ``obj.__forEach(fn_executor)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.forEach()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach)
+
+The forEach() method executes a provided function once for each array element.
+
+```javascript
+var obj1 = new oEvolve({
+  a: 12,
+  b: 5,
+  c: 8,
+  d: 130,
+  f: 44
+});
+
+obj1.__forEach(function(currentValue, index, self){
+  console.log(currentValue, index);
+});
+//  12  "a"
+//   5  "b" 
+//   8  "c" 
+// 130  "d"
+//  44  "f"
+```
+
+### ``obj.__includes(val)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.includes()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes)
+
+The ``__includes()`` method determines whether an object includes a certain element, returning ``true`` or ``false`` as appropriate.
+
+```javascript
+var a = new oEvolve({
+  a: 12,
+  b: 5,
+  c: 8,
+  d: 130,
+  f: 44
+});
+
+console.log(a.__includes(12)); // true 
+console.log(a.__includes(0)); // false 
+```
+
+### ``obj.__indexOf(value, bool_deep)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.indexOf()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/indexOf)
+
+### ``obj.__join(str_seperator)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.join()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/join)
+
+### ``obj.__keys()``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.keys()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/keys)
+
+### ``obj.__lastIndexOf(value, bool_deep)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.lastIndexOf()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/lastIndexOf)
+
+### ``obj.__map(fn_executor)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.map()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)
+
+### ``obj.__pop(bool_withKey)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.pop()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/pop)
+
+### ``obj.__reduce(fn_executor)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.reduce()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
+
+### ``obj.__reduceRight(fn_executor)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.reduceRight()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight)
+
+### ``obj.__reverse()``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.reverse()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reverse)
+
+### ``obj.__shift(bool_withKey)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.shift()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/shift)
+
+### ``obj.__some(fn_conditioner)``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.some()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/some)
+
+### ``obj.__values()``
+_Doesn't work with ``Array`` instance, only works with ``Object`` instance._
+
+Just like [Array.prototype.values()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/values)
+
 ## Static Functions
 
 ### ``oEvolve.diff(obj1, obj2)``
