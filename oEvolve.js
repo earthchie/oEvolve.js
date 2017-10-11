@@ -1,7 +1,7 @@
 /**
  * @name oEvolve.js
- * @version 1.1.1
- * @update June 27, 2017
+ * @version 1.2.0
+ * @update October 11, 2017
  * @website https://github.com/earthchie/oEvolve.js
  * @author Earthchie https://facebook.com/earthchie/
  * @license WTFPL v.2 - http://www.wtfpl.net/
@@ -931,10 +931,13 @@ oEvolve.inflate = function (obj) {
     return result;
 };
 
-oEvolve.deflate = function (obj) {
+oEvolve.deflate = function (obj, depth) {
     'use strict';
+    if(!isNaN(depth)){
+        depth--;
+    }
     //https://gist.github.com/penguinboy/762197
-    var flattenObject = function (ob) {
+    var flattenObject = function (ob, depth) {
         var toReturn = {},
             i,
             x,
@@ -943,11 +946,18 @@ oEvolve.deflate = function (obj) {
         if (ob.__isEvolved) {
             ob = ob.__data();
         }
+        if(!isNaN(depth)){
+            if(depth <= 0){
+                return ob;
+            }else{
+                depth--;
+            }
+        }
         for (i in ob) {
             if (ob.hasOwnProperty(i)) {
 
                 if (typeof ob[i] === 'object') {
-                    flatObject = flattenObject(ob[i]);
+                    flatObject = flattenObject(ob[i], depth);
 
                     for (x in flatObject) {
 
@@ -965,7 +975,7 @@ oEvolve.deflate = function (obj) {
         return toReturn;
     };
 
-    return flattenObject(obj);
+    return flattenObject(obj, depth);
 };
 
 oEvolve.isEqual = function (obj1, obj2) {

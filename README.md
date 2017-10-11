@@ -774,6 +774,35 @@ Result:
 }
 ```
 
+You can also pass an integer as second parameter to control the depth if you needed
+
+for example:
+```javascript
+var data = oEvolve.deflate({
+  A1: {
+    A2: {
+      A3: 'A3',
+      foo: 'bar'
+    },
+    foo: 'bar'
+  }
+}, 2); // depth = 2
+
+console.log(data);
+```
+
+Result:
+
+```javascript
+{
+  "A1.A2": {
+    "A3": "A3",
+    "foo": "bar"
+  },
+  "A1.foo": "bar"
+}
+```
+
 ### ``oEvolve.isEqual(obj1, obj2)``
 compare 2 object, this equivalence to ``JSON.stringify(obj1) === JSON.stringify(obj2)``
 
